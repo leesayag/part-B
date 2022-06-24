@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Contact{% endblock %}
+{% block content %}
+
+<div id="currentTab" style="display:none">Contact</div>
+<h1>Registration for the national Smile Competition for 2022</h1>
+<form>
+  <label for="First_Name">First Name</label>
+  <input type="text" id="First_Name" name="First_Name" /><br /><br />
+  <label for="Last_Name">Last Name</label>
+  <input type="text" id="Last_Name" name="Last_Name" /><br /><br />
+  <label for="E_mail">Email</label>
+  <input type="email" id="E_mail" name="Email" /><br /><br />
+  <label for="birthday">Birthday:</label>
+  <input type="date" id="birthday" name="birthday"><br /><br />
+  <label for="Description">Describe if there is experience in modeling</label><br />
+  <textarea name="Description" id="Description" cols="20" rows="10"></textarea><br /><br />
+  <label for="Photo">Add Your Best Photo</label>
+  <input type="file" accept="image/*" name="Photo" />
+  <br><br>
+
+  <div class="lee" onclick="send()">Send</div>
+
+</form>
+<div class="title">TODO:</div>
+<div class="cards">
+  <div class="card">wash the car</div>
+  <div class="card">grab something to eat</div>
+  <div class="card">THREE</div>
+  <div class="card">FOUR</div>
+  <div class="card">FIVE</div>
+  <div class="card">SIX</div>
+  <div class="card">SEVEN</div>
+  <div class="card">EIGHT</div>
+  <div class="card">NINE</div>
+</div>
+<script>
+  changeTab('contact')
+</script>
+{% endblock %}

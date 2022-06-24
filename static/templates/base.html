@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/script.js"></script>
+</head>
+
+<body>
+  <div class="header">
+    <div class="tab" id="home"><a href="/">Home</a></div>
+    <div class="tab" id="contact"><a href="/contact">Contact</a></div>
+    <div class="tab" id="assignment3_1"><a href="/assignment3_1">Assignment3 1</a></div>
+    <div class="tab" id="assignment3_2"><a href="/assignment3_2">Assignment3 2</a></div>
+    {% if userLoggedIn != None %}
+    <div class="tab" id="logout">Hi -{{userLoggedIn}} </div>
+    <div class="tab" id="logout"><a href="/logout">Logout</a></div>
+    {% else %}
+    {% endif %}
+  </div>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div id="currentTab" style="display:none">Home</div>
+<h1 onclick="easterEgg()">Do you think that smile is pretty?</h1>
+<img src="images\smile.jpg" alt="cute boy" style=" padding: 10px; border: 2px solid; border-color:purple " />
+
+<h2>To sign up for the national smiles competition <a href="#">click
+    here</a> </h2>
+
+<script>
+  changeTab('home')
+</script>
+{% endblock %}
