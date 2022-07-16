@@ -1,67 +1,93 @@
-from flask import Flask, request, session
-import flask
-
-app = Flask(__name__, static_url_path='', static_folder='static',
-            template_folder='static/templates')
-
-app.secret_key = "test"
-
-users = [
-    {"name": "Yossi", "email": "yossi@gmail.com"},
-    {"name": "Amir", "email": "amir@gmail.com"},
-    {"name": "Guy", "email": "guy@gmail.com"},
-    {"name": "Gal", "email": "gal@gmail.com"},
-    {"name": "Assaf", "email": "assaf@gmail.com"},
-]
+import json
+import requests
+import random
+from flask import Flask, redirect, url_for, request, Blueprint, jsonify
+from flask import render_template, session
+import asyncio
+import aiohttp
+from pages.assignment4.assignment4 import assignment4
+from interact_with_DB import interact_db
+app = Flask(__name__)
+app.register_blueprint(assignment4)
+app.secret_key = '123'
 
 
-@ app.route('/')
-def home():
-    return flask.render_template('home.html', userLoggedIn=session.get('userLoggedIn'))
+@app.route('/')
+def cv_main_page():
+    return render_template('base.html')
+
+@app.route('/header')
+def header_page():
+    return render_template('header.html')
 
 
-@ app.route('/contact')
-def contact():
-    return flask.render_template('contact.html', userLoggedIn=session.get('userLoggedIn'))
+users = {
+  'yossi':{"name": "Yossi", "email": "yossi@gmail.com"},
+    'amir':{"name": "Amir", "email": "amir@gmail.com"},
+    'guy':{"name": "Guy", "email": "guy@gmail.com"},
+   'gal': {"name": "Gal", "email": "gal@gmail.com"},
+    'assaf':{"name": "Assaf", "email": "assaf@gmail.com"},
+}
 
 
-@ app.route('/assignment3_1')
-def assignment3_1():
-    return flask.render_template('assignment3_1.html', userLoggedIn=session.get('userLoggedIn'))
+
+@app.route('/assignment4/outer_source')
+def outer_source():
+    return render_template('Back-Front.html')
 
 
-@ app.route('/logout')
-def logout():
-    session['userLoggedIn'] = None
-    search = {'name': '', 'email': ''}
-    return flask.render_template('assignment3_2.html', search=search, len=len(users), users=users, userLoggedIn=session.get('userLoggedIn'))
 
 
-@ app.route('/assignment3_2', methods=['GET', 'POST'])
-def assignment3_2():
-    # GET
-    args = request.args
-    usersToReturn = []
-    search = {'name': '', 'email': ''}
-    if('name' in args and args['name'] != ''):
-        search['name'] = args['name']
 
-    if('email' in args and args['email'] != ''):
-        search['email'] = args['email']
 
+
+@app.route('/assignment4/users')
+def assignment4_userJson():
+    query = 'select  id,name,email from users;'
+    users = interact_db(query=query, query_type='fetch')
+    response = []
     for user in users:
-        if((search['name'] != '' and search['name'] in str(user['name'])) or (search['email'] != '' and search['email'] in str(user['email']))):
-            usersToReturn.append(user)
-        if(search['name'] == '' and search['email'] == ''):
-            usersToReturn.append(user)
+        response.append({
+            "id": user[0],
+            "name": user[1],
+            "email": user[2]
+        })
+    return render_template('users.html', users=json.dumps(response))
 
-    # POST
-    if (request.values.get('nickname')):
-        session['userLoggedIn'] = request.values.get('nickname')
+@app.route('/assignment4/outer_source/json')
+def assignment4_def_json():
+    number = request.args['number']
+    res = requests.get("https://reqres.in/api/users/{}".format(number))
+    response = jsonify(res.json())
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
-    return flask.render_template('assignment3_2.html', search=search, len=len(usersToReturn), users=usersToReturn, userLoggedIn=session.get('userLoggedIn'))
+
+@app.route('/assignment4/restapi/', defaults={'user_id':60})
+@app.route('/assignment4/restapi/<int:user_id>')
+def get_users_def(user_id):
+    query = 'select  id,name,email from users where id=%s;' % user_id
+    users = interact_db(query=query, query_type='fetch')
+    if len(users) == 0 :
+        user_dict = {
+            'status' : 'failed' ,
+            'message' : 'user not found'
+        }
+    else:
+        user_dict = {
+            'status': 'success',
+            f'id': users[0].id,
+            'name': users[0].name,
+            'email': users[0].email
+        }
+    return jsonify(user_dict)
 
 
-@ app.route('/redirect')
-def redirect():
-    return flask.redirect('/')
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+
